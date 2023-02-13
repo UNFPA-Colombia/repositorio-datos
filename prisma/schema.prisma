@@ -1,0 +1,69 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Municipios {
+  divipola        String        @id @db.VarChar(5)
+  nombre          String        @db.VarChar(255)
+  departamentoR   Departamentos @relation(fields: [departamento], references: [divipola])
+  departamento    String        @db.VarChar(5)
+  regionR         RegionesPDET? @relation(fields: [region], references: [divipola])
+  region          String?       @db.VarChar(5)
+  Entradas        Entradas[]
+  CiudadPrincipal Boolean       @default(false)
+  Total           Boolean       @default(false)
+}
+
+model Departamentos {
+  divipola   String       @id @db.VarChar(5)
+  nombre     String       @db.VarChar(255)
+  municipios Municipios[]
+}
+
+model RegionesPDET {
+  divipola   String       @id @db.VarChar(5)
+  nombre     String       @db.VarChar(255)
+  municipios Municipios[]
+}
+
+model Repositorios {
+  id          Int           @id @default(autoincrement())
+  nombre      String        @db.VarChar(255)
+  descripcion String        @db.VarChar(255)
+  indicadores Indicadores[]
+}
+
+model Indicadores {
+  id          Int            @id @default(autoincrement())
+  nombre      String         @db.VarChar(255)
+  descripcion String         @db.VarChar(255)
+  repositorio Repositorios[]
+  variables   Varibles[]
+}
+
+model Varibles {
+  id          Int         @id @default(autoincrement())
+  Indicador   Indicadores @relation(fields: [indicadorId], references: [id])
+  indicadorId Int
+  nombre      String      @db.VarChar(255)
+  descripcion String      @db.VarChar(255)
+  unidad      String      @db.VarChar(255)
+  Entradas    Entradas[]
+}
+
+model Entradas {
+  municipioR Municipios @relation(fields: [municipio], references: [divipola])
+  municipio  String     @db.VarChar(5)
+  anio       Int        @db.SmallInt
+  variableR  Varibles   @relation(fields: [variableId], references: [id])
+  variableId Int
+  final      Boolean    @default(true)
+
+  @@id([municipio, anio, variableId])
+}
