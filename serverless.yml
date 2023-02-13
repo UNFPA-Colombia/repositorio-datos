@@ -1,0 +1,43 @@
+org: andresmars25
+app: repositorio-datos
+service: repositorio-datos
+plugins:
+  - serverless-dotenv-plugin
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: nodejs14.x
+
+functions:
+  status:
+    handler: functions/status.handler
+    events:
+      - http:
+          method: GET
+          path: /
+  departamentos:
+    handler: functions/departamentos.handler
+    events:
+      - http:
+          method: GET
+          path: /departamentos
+  postDepartamentos:
+    handler: functions/postDepartamentos.handler
+    events:
+      - http:
+          method: POST
+          path: /departamentos
+  postDepartamento:
+    handler: functions/postDepartamento.handler
+    events:
+      - http:
+          method: POST
+          path: /departamento
+
+package:
+  patterns:
+    - '!node_modules/.prisma/client/libquery_engine-*'
+    - 'node_modules/.prisma/client/libquery_engine-rhel-*'
+    - '!node_modules/prisma/libquery_engine-*'
+    - '!node_modules/@prisma/engines/**'
