@@ -1,0 +1,18 @@
+{
+  "name": "repositorio-datos",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node index.js",
+    "prisma:introspect": "prisma introspect",
+    "prisma:generate": "prisma generate"
+  },
+  "author": "Andrés Martínez",
+  "license": "ISC",
+  "devDependencies": {
+    "prisma": "^4.10.1",
+    "serverless-dotenv-plugin": "^3.11.1"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.10.1"
+  }
+}
