@@ -9,15 +9,16 @@ datasource db {
 }
 
 model Municipios {
-  divipola        String        @id @db.VarChar(5)
-  nombre          String        @db.VarChar(255)
-  departamentoR   Departamentos @relation(fields: [departamento], references: [divipola])
-  departamento    String        @db.VarChar(5)
-  regionR         RegionesPDET? @relation(fields: [region], references: [divipola])
-  region          String?       @db.VarChar(5)
-  Entradas        Entradas[]
-  CiudadPrincipal Boolean       @default(false)
-  Total           Boolean       @default(false)
+  divipola            String                @id @db.VarChar(5)
+  nombre              String                @db.VarChar(255)
+  departamentoR       Departamentos         @relation(fields: [departamento], references: [divipola])
+  departamento        String                @db.VarChar(5)
+  regionR             Regiones?             @relation(fields: [region], references: [divipola])
+  region              String?               @db.VarChar(5)
+  entradasNumericas   EntradasNumericas[]
+  entradasCategoricas EntradasCategoricas[]
+  CiudadPrincipal     Boolean               @default(false)
+  Total               Boolean               @default(false)
 }
 
 model Departamentos {
@@ -26,7 +27,7 @@ model Departamentos {
   municipios Municipios[]
 }
 
-model RegionesPDET {
+model Regiones {
   divipola   String       @id @db.VarChar(5)
   nombre     String       @db.VarChar(255)
   municipios Municipios[]
@@ -40,30 +41,73 @@ model Repositorios {
 }
 
 model Indicadores {
-  id          Int            @id @default(autoincrement())
-  nombre      String         @db.VarChar(255)
-  descripcion String         @db.VarChar(255)
-  repositorio Repositorios[]
-  variables   Varibles[]
+  id                   Int                   @id @default(autoincrement())
+  nombre               String                @db.VarChar(255)
+  descripcion          String                @db.VarChar(255)
+  repositorio          Repositorios[]
+  variablesNumericas   VariblesNumericas[]
+  variablesCategoricas VariblesCategoricas[]
 }
 
-model Varibles {
-  id          Int         @id @default(autoincrement())
-  Indicador   Indicadores @relation(fields: [indicadorId], references: [id])
+model VariblesNumericas {
+  id          Int                 @id @default(autoincrement())
+  Indicador   Indicadores         @relation(fields: [indicadorId], references: [id])
   indicadorId Int
-  nombre      String      @db.VarChar(255)
-  descripcion String      @db.VarChar(255)
-  unidad      String      @db.VarChar(255)
-  Entradas    Entradas[]
+  nombre      String              @db.VarChar(255)
+  descripcion String              @db.VarChar(255)
+  unidad      String              @db.VarChar(255)
+  Entradas    EntradasNumericas[]
 }
 
-model Entradas {
-  municipioR Municipios @relation(fields: [municipio], references: [divipola])
-  municipio  String     @db.VarChar(5)
-  anio       Int        @db.SmallInt
-  variableR  Varibles   @relation(fields: [variableId], references: [id])
+model EntradasNumericas {
+  municipioR Municipios        @relation(fields: [municipio], references: [divipola])
+  municipio  String            @db.VarChar(5)
+  anio       Int               @db.SmallInt
+  variableR  VariblesNumericas @relation(fields: [variableId], references: [id])
   variableId Int
-  final      Boolean    @default(true)
+  final      Boolean           @default(true)
+  valor      Float             @db.DoublePrecision
 
   @@id([municipio, anio, variableId])
+}
+
+model VariblesCategoricas {
+  id          Int                   @id @default(autoincrement())
+  Indicador   Indicadores           @relation(fields: [indicadorId], references: [id])
+  indicadorId Int
+  nombre      String                @db.VarChar(255)
+  descripcion String                @db.VarChar(255)
+  Entradas    EntradasCategoricas[]
+  categoriaR  Categorias            @relation(fields: [categoriaId], references: [id])
+  categoriaId Int
+}
+
+model EntradasCategoricas {
+  municipioR Municipios          @relation(fields: [municipio], references: [divipola])
+  municipio  String              @db.VarChar(5)
+  anio       Int                 @db.SmallInt
+  variableR  VariblesCategoricas @relation(fields: [variableId], references: [id])
+  variableId Int
+  final      Boolean             @default(true)
+  valor      Opciones            @relation(fields: [valorId], references: [id])
+  valorId    Int
+
+  @@id([municipio, anio, variableId])
+}
+
+model Categorias {
+  id          Int                   @id @default(autoincrement())
+  nombre      String                @db.VarChar(255)
+  descripcion String                @db.VarChar(255)
+  opciones    Opciones[]
+  variables   VariblesCategoricas[]
+}
+
+model Opciones {
+  id          Int                   @id @default(autoincrement())
+  categoria   Categorias            @relation(fields: [categoriaId], references: [id])
+  categoriaId Int
+  nombre      String                @db.VarChar(255)
+  descripcion String                @db.VarChar(255)
+  entradas    EntradasCategoricas[]
 }
