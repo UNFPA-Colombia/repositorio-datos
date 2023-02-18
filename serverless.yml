@@ -7,7 +7,7 @@ plugins:
 provider:
   name: aws
   region: us-east-1
-  runtime: nodejs14.x
+  runtime: nodejs18.x
 
 functions:
   status:
@@ -16,24 +16,69 @@ functions:
       - http:
           method: GET
           path: /
-  departamentos:
-    handler: functions/departamentos.handler
+
+  getDepartamentos:
+    handler: functions/get/departamentos.handler
     events:
       - http:
           method: GET
           path: /departamentos
+  getDepartamento:
+    handler: functions/get/departamento.handler
+    events:
+      - http:
+          method: GET
+          path: /departamento
   postDepartamentos:
-    handler: functions/postDepartamentos.handler
+    handler: functions/post/departamentos.handler
     events:
       - http:
           method: POST
           path: /departamentos
   postDepartamento:
-    handler: functions/postDepartamento.handler
+    handler: functions/post/departamento.handler
     events:
       - http:
           method: POST
           path: /departamento
+  
+  getMunicipios:
+    handler: functions/get/municipios.handler
+    events:
+      - http:
+          method: GET
+          path: /municipios
+  postMunicipios:
+    handler: functions/post/municipios.handler
+    events:
+      - http:
+          method: POST
+          path: /municipios
+  postMunicipio:
+    handler: functions/post/municipio.handler
+    events:
+      - http:
+          method: POST
+          path: /municipio
+
+  getRegiones:
+    handler: functions/get/regiones.handler
+    events:
+      - http:
+          method: GET
+          path: /regiones
+  postRegiones:
+    handler: functions/post/regiones.handler
+    events:
+      - http:
+          method: POST
+          path: /regiones
+  postRegion:
+    handler: functions/post/region.handler
+    events:
+      - http:
+          method: POST
+          path: /region
 
 package:
   patterns:
