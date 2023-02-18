@@ -13,6 +13,7 @@
     "serverless-dotenv-plugin": "^3.11.1"
   },
   "dependencies": {
-    "@prisma/client": "^4.10.1"
+    "@prisma/client": "^4.10.1",
+    "joi": "^17.7.1"
   }
 }
