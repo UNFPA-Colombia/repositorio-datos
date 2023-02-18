@@ -8,29 +8,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Municipios {
+model Territorios {
   divipola            String                @id @db.VarChar(5)
   nombre              String                @db.VarChar(255)
-  departamentoR       Departamentos         @relation(fields: [departamento], references: [divipola])
-  departamento        String                @db.VarChar(5)
-  regionR             Regiones?             @relation(fields: [region], references: [divipola])
-  region              String?               @db.VarChar(5)
   entradasNumericas   EntradasNumericas[]
   entradasCategoricas EntradasCategoricas[]
-  CiudadPrincipal     Boolean               @default(false)
-  Total               Boolean               @default(false)
+  tipoR               TiposTerritorios      @relation(fields: [tipo], references: [nombre])
+  tipo                String
+  superiores          Territorios[]         @relation("Rango")
+  inferiores          Territorios[]         @relation("Rango")
 }
 
-model Departamentos {
-  divipola   String       @id @db.VarChar(5)
-  nombre     String       @db.VarChar(255)
-  municipios Municipios[]
-}
-
-model Regiones {
-  divipola   String       @id @db.VarChar(5)
-  nombre     String       @db.VarChar(255)
-  municipios Municipios[]
+model TiposTerritorios {
+  nombre      String        @id @db.VarChar(50)
+  descripcion String        @db.VarChar(255)
+  territorios Territorios[]
 }
 
 model Repositorios {
@@ -50,59 +42,65 @@ model Indicadores {
 }
 
 model VariblesNumericas {
-  id          Int                 @id @default(autoincrement())
-  Indicador   Indicadores         @relation(fields: [indicadorId], references: [id])
-  indicadorId Int
-  nombre      String              @db.VarChar(255)
-  descripcion String              @db.VarChar(255)
-  unidad      String              @db.VarChar(255)
-  Entradas    EntradasNumericas[]
-  desagregacionR Desagregaciones? @relation(fields: [desagregacionId], references: [id])
+  id              Int                 @id @default(autoincrement())
+  Indicador       Indicadores         @relation(fields: [indicadorId], references: [id])
+  indicadorId     Int
+  nombre          String              @db.VarChar(255)
+  descripcion     String              @db.VarChar(255)
+  unidad          String              @db.VarChar(255)
+  Entradas        EntradasNumericas[]
+  desagregacionR  Desagregaciones?    @relation(fields: [desagregacionId], references: [id])
   desagregacionId Int?
 }
 
 model EntradasNumericas {
-  municipioR Municipios        @relation(fields: [municipio], references: [divipola])
-  municipio  String            @db.VarChar(5)
-  fecha      DateTime          @db.Date
-  variableR  VariblesNumericas @relation(fields: [variableId], references: [id])
-  variableId Int
-  final      Boolean           @default(true)
-  valor      Float             @db.DoublePrecision
-  desagregacionR OpcionesDesagregaciones? @relation(fields: [desagregacionId], references: [id])
-  desagregacionId Int?
-  fuenteR   Fuentes?          @relation(fields: [fuenteId], references: [id])
-  fuenteId  Int?
-  @@id([municipio, fecha, variableId])
+  municipioR          Territorios              @relation(fields: [territorio], references: [divipola])
+  territorio          String                   @db.VarChar(5)
+  fecha               DateTime                 @db.Date
+  variableR           VariblesNumericas        @relation(fields: [variableId], references: [id])
+  variableId          Int
+  final               Boolean                  @default(true)
+  valor               Float                    @db.DoublePrecision
+  desagregacionR      Desagregaciones?         @relation(fields: [desagregacionId], references: [id])
+  desagregacionId     Int?
+  opcionR             OpcionesDesagregaciones? @relation(fields: [opcionDesagregacion], references: [id])
+  opcionDesagregacion Int?
+  fuenteR             Fuentes?                 @relation(fields: [fuenteId], references: [id])
+  fuenteId            Int?
+
+  @@id([territorio, fecha, variableId])
 }
 
 model VariblesCategoricas {
-  id          Int                   @id @default(autoincrement())
-  Indicador   Indicadores           @relation(fields: [indicadorId], references: [id])
-  indicadorId Int
-  nombre      String                @db.VarChar(255)
-  descripcion String                @db.VarChar(255)
-  Entradas    EntradasCategoricas[]
-  categoriaR  Categorias            @relation(fields: [categoriaId], references: [id])
-  categoriaId Int
-  desagregacionR Desagregaciones?   @relation(fields: [desagregacionId], references: [id])
+  id              Int                   @id @default(autoincrement())
+  Indicador       Indicadores           @relation(fields: [indicadorId], references: [id])
+  indicadorId     Int
+  nombre          String                @db.VarChar(255)
+  descripcion     String                @db.VarChar(255)
+  Entradas        EntradasCategoricas[]
+  categoriaR      Categorias            @relation(fields: [categoriaId], references: [id])
+  categoriaId     Int
+  desagregacionR  Desagregaciones?      @relation(fields: [desagregacionId], references: [id])
   desagregacionId Int?
 }
 
 model EntradasCategoricas {
-  municipioR Municipios          @relation(fields: [municipio], references: [divipola])
-  municipio  String              @db.VarChar(5)
-  fecha      DateTime          @db.Date
-  variableR  VariblesCategoricas @relation(fields: [variableId], references: [id])
-  variableId Int
-  final      Boolean             @default(true)
-  valor      Opciones            @relation(fields: [valorId], references: [id])
-  valorId    Int
-  desagregacionR OpcionesDesagregaciones? @relation(fields: [desagregacionId], references: [id])
-  desagregacionId Int?
-  fuenteR   Fuentes?            @relation(fields: [fuenteId], references: [id])
-  fuenteId  Int?
-  @@id([municipio, fecha, variableId])
+  territorioR           Territorios              @relation(fields: [territorio], references: [divipola])
+  territorio            String                   @db.VarChar(5)
+  fecha                 DateTime                 @db.Date
+  variableR             VariblesCategoricas      @relation(fields: [variableId], references: [id])
+  variableId            Int
+  final                 Boolean                  @default(true)
+  valor                 Opciones                 @relation(fields: [valorId], references: [id])
+  valorId               Int
+  desagregacionR        Desagregaciones?         @relation(fields: [desagregacionId], references: [id])
+  desagregacionId       Int?
+  fuenteR               Fuentes?                 @relation(fields: [fuenteId], references: [id])
+  fuenteId              Int?
+  opcionR               OpcionesDesagregaciones? @relation(fields: [opcionDesagregacionId], references: [id])
+  opcionDesagregacionId Int?
+
+  @@id([territorio, fecha, variableId])
 }
 
 model Categorias {
@@ -123,28 +121,30 @@ model Opciones {
 }
 
 model Desagregaciones {
-  id          Int                   @id @default(autoincrement())
-  nombre      String                @db.VarChar(255)
-  descripcion String                @db.VarChar(255)
-  variables   OpcionesDesagregaciones[]
+  id                   Int                       @id @default(autoincrement())
+  nombre               String                    @db.VarChar(255)
+  descripcion          String                    @db.VarChar(255)
+  variables            OpcionesDesagregaciones[]
   variablesCategoricas VariblesCategoricas[]
-  variablesNumericas VariblesNumericas[]
+  variablesNumericas   VariblesNumericas[]
+  entradasNumericas    EntradasNumericas[]
+  entradasCategoricas  EntradasCategoricas[]
 }
 
 model OpcionesDesagregaciones {
-  id               Int                   @id @default(autoincrement())
-  desagregacion    Desagregaciones       @relation(fields: [desagregacionId], references: [id])
-  desagregacionId  Int
-  nombre           String                @db.VarChar(255)
-  descripcion      String                @db.VarChar(255)
-  entradasNumericas EntradasNumericas[]
+  id                  Int                   @id @default(autoincrement())
+  desagregacion       Desagregaciones       @relation(fields: [desagregacionId], references: [id])
+  desagregacionId     Int
+  nombre              String                @db.VarChar(255)
+  descripcion         String                @db.VarChar(255)
+  entradasNumericas   EntradasNumericas[]
   entradasCategoricas EntradasCategoricas[]
 }
 
 model Fuentes {
-  id          Int                   @id @default(autoincrement())
-  nombre      String                @db.VarChar(255)
-  descripcion String                @db.VarChar(255)
-  entradasNumericas    EntradasNumericas[]
+  id                  Int                   @id @default(autoincrement())
+  nombre              String                @db.VarChar(255)
+  descripcion         String                @db.VarChar(255)
+  entradasNumericas   EntradasNumericas[]
   entradasCategoricas EntradasCategoricas[]
 }
