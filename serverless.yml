@@ -10,6 +10,9 @@ provider:
   runtime: nodejs18.x
 
 functions:
+
+  verify-token:
+          handler: functions/auth.handler
   status:
     handler: functions/status.handler
     events:
@@ -23,6 +26,10 @@ functions:
       - http:
           method: POST
           path: /register
+          authorizer:
+            name: verify-token
+            identitySource: method.request.header.Authorization
+            resultTtlInSeconds: 3600
 
   login:
     handler: functions/login.handler
