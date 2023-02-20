@@ -17,6 +17,20 @@ functions:
           method: GET
           path: /
 
+  register:
+    handler: functions/register.handler
+    events:
+      - http:
+          method: POST
+          path: /register
+
+  login:
+    handler: functions/login.handler
+    events:
+      - http:
+          method: POST
+          path: /login
+
   getDepartamentos:
     handler: functions/get/departamentos.handler
     events:
@@ -28,7 +42,7 @@ functions:
     events:
       - http:
           method: GET
-          path: /departamento
+          path: /departamento/{divipola}
   postDepartamentos:
     handler: functions/post/departamentos.handler
     events:
