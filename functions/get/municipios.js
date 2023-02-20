@@ -25,7 +25,7 @@ exports.handler = async (event, context, callback) => {
                 municipio.departamento = municipio.superiores.find(superior => superior.tipo === 'Departamento')
             }
             if (value.regiones) {
-                municipio.regiones = municipio.superiores.filter(superior => superior.tipo === 'Región PDET')
+                municipio.regiones = municipio.superiores.filter(superior => superior.tipo === 'RegionPDET')
             }
             delete municipio.superiores
         })

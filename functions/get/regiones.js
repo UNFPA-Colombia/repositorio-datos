@@ -16,7 +16,7 @@ exports.handler = async (event, context, callback) => {
             }
         }
         const regiones = await prisma.territorios.findMany({
-            where: { tipo: 'Región PDET' },
+            where: { tipo: 'RegionPDET' },
             include: { inferiores: value.municipios }
         })
         regiones.forEach(region => {

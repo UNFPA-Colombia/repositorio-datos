@@ -29,7 +29,7 @@ exports.handler = async (event, context, callback) => {
                     data: {
                         divipola: region.divipola,
                         nombre: region.nombre,
-                        tipo: 'Región PDET',
+                        tipo: 'RegionPDET',
                         inferiores: {
                             connect: region.municipios.map(m => ({ divipola: m }))
                         },
