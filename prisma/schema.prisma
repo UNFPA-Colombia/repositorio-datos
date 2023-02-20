@@ -13,16 +13,16 @@ model Territorios {
   nombre              String                @db.VarChar(255)
   entradasNumericas   EntradasNumericas[]
   entradasCategoricas EntradasCategoricas[]
-  tipoR               TiposTerritorios      @relation(fields: [tipo], references: [nombre])
-  tipo                String
+  tipo                TiposTerritorios
   superiores          Territorios[]         @relation("Rango")
   inferiores          Territorios[]         @relation("Rango")
 }
 
-model TiposTerritorios {
-  nombre      String        @id @db.VarChar(50)
-  descripcion String        @db.VarChar(255)
-  territorios Territorios[]
+enum TiposTerritorios {
+  Municipio
+  Departamento
+  Pais
+  RegionPDET
 }
 
 model Repositorios {
@@ -147,4 +147,19 @@ model Fuentes {
   descripcion         String                @db.VarChar(255)
   entradasNumericas   EntradasNumericas[]
   entradasCategoricas EntradasCategoricas[]
+}
+
+model Usuarios {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique @db.VarChar(255)
+  nombre       String?  @db.VarChar(255)
+  passwordHash String   @db.VarChar(255)
+  rol          Rol      @default(USER)
+  createdAt    DateTime @default(now()) @db.Date
+  updatedAt    DateTime @updatedAt @db.Date
+}
+
+enum Rol {
+  USER
+  ADMIN
 }
