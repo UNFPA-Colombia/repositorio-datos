@@ -3,28 +3,40 @@ const prisma = new PrismaClient()
 const Joi = require('joi')
 
 exports.handler = async (event, context, callback) => {
-    const schema = Joi.object().keys({
+    const schemaQ = Joi.object().keys({
         municipios: Joi.boolean().default(false),
+    }).default({})
+    const schemaP = Joi.object().keys({
         divipola: Joi.string().length(5).required(),
     }).required()
     try {
-        const { value, error } = schema.validate(event.queryStringParameters)
-        if (error) {
+        const resultQ = schemaQ.validate(event.queryStringParameters ? event.queryStringParameters : {})
+        if (resultQ.error) {
             return {
                 statusCode: 400,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ error: error.details[0].message })
+                body: JSON.stringify({ error: resultQ.error.details[0].message })
             }
         }
-        const departamento = await prisma.territorios.findUnique({
+        const resultP = schemaP.validate(event.pathParameters)
+        if (resultP.error) {
+            return {
+                statusCode: 400,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ error: resultP.error.details[0].message })
+            }
+        }
+        const departamento = await prisma.territorios.findFirstOrThrow({
             where: {
                 tipo: 'Departamento',
-                divipola: value.divipola,
+                divipola: resultP.value.divipola,
             },
-            include: { inferiores: value.municipios }
+            include: { inferiores: resultQ.value.municipios }
         })
-        departamento.municipios = departamento.inferiores
-        delete departamento.inferiores  
+        if (resultQ.value.municipios) {
+            departamento.municipios = departamento.inferiores
+            delete departamento.inferiores
+        }
         return {
             statusCode: 200,
             headers: { 'Content-Type': 'application/json' },
